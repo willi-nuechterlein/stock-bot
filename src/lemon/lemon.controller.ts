@@ -24,6 +24,11 @@ export class LemonController {
     return this.lemonService.getPositions()
   }
 
+  @Get('/orders')
+  getOrders(): any {
+    return this.lemonService.getOrders()
+  }
+
   @Get('/instrument')
   getInstruments(@Query() query: GetInstrumentBody): any {
     const { ticker } = query

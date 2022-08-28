@@ -97,4 +97,8 @@ export class LemonService {
   async activateOrder(orderId: string): Promise<any> {
     return this.postLemonTrading(`/orders/${orderId}/activate`)
   }
+
+  async getOrders(): Promise<any> {
+    return this.getLemonTrading('/orders')
+  }
 }
