@@ -73,6 +73,22 @@ export class LemonService {
     }
   }
 
+  private async deleteLemonTrading(path: string): Promise<any> {
+    try {
+      const { data } = await axios({
+        method: 'DELETE',
+        url: `${this.getLemonTradingUrl()}${path}`,
+        headers: {
+          Authorization: `Bearer ${this.getLemonKey()}`
+        }
+      })
+      return data
+    } catch (error) {
+      Logger.error(error)
+      return error.message
+    }
+  }
+
   async getAccount(): Promise<any> {
     return this.getLemonTrading('/account')
   }
@@ -100,5 +116,9 @@ export class LemonService {
 
   async getOrders(): Promise<any> {
     return this.getLemonTrading('/orders')
+  }
+
+  async cancelOrder(orderId: string): Promise<any> {
+    return this.deleteLemonTrading(`/orders/${orderId}`)
   }
 }

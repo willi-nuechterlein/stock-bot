@@ -2,7 +2,9 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   Query
 } from '@nestjs/common'
@@ -53,5 +55,10 @@ export class LemonController {
       }
     }
     throw new BadRequestException()
+  }
+
+  @Delete('/orders/:id')
+  deleteOrder(@Param('id') id: string): any {
+    return this.lemonService.cancelOrder(id)
   }
 }
