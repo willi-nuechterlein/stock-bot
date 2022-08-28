@@ -38,9 +38,9 @@ export class LemonController {
   async trade(@Body() body: PostTradeBody): Promise<any> {
     const { ticker } = body
     const isinString = isin[ticker]
-    const { id } = await this.lemonService.placeBuyOrder(isinString)
-    if (id) {
-      const { status } = await this.lemonService.activateOrder(id)
+    const { results } = await this.lemonService.placeBuyOrder(isinString)
+    if (results?.id) {
+      const { status } = await this.lemonService.activateOrder(results.id)
       if (status === 'ok') {
         return 'Order active'
       } else {

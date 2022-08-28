@@ -57,9 +57,14 @@ export class LemonService {
 
   private async postLemonTrading(path: string, body?: any): Promise<any> {
     try {
-      const { data } = await axios.post(`${this.getLemonTradingUrl()}${path}`, {
-        headers: { Authorization: `Bearer ${this.getLemonKey()}` },
-        body
+      const { data } = await axios({
+        method: 'POST',
+        url: `${this.getLemonTradingUrl()}${path}`,
+        headers: {
+          Authorization: `Bearer ${this.getLemonKey()}`,
+          'Content-Type': 'application/json; charset=utf-8'
+        },
+        data: body
       })
       return data
     } catch (error) {
