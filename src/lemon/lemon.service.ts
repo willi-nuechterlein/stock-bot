@@ -35,6 +35,8 @@ export class LemonService {
       return data
     } catch (error) {
       Logger.error(error)
+      Logger.error(error.response.data)
+      Logger.error(error.response.headers)
       return error.message
     }
   }
@@ -51,6 +53,8 @@ export class LemonService {
       return data
     } catch (error) {
       Logger.error(error)
+      Logger.error(error.response.data)
+      Logger.error(error.response.headers)
       return error.message
     }
   }
@@ -69,6 +73,8 @@ export class LemonService {
       return data
     } catch (error) {
       Logger.error(error)
+      Logger.error(error.response.data)
+      Logger.error(error.response.headers)
       return error.message
     }
   }
@@ -101,12 +107,23 @@ export class LemonService {
     return this.getLemonData('/instruments', { search: ticker, type: 'stock' })
   }
 
-  async placeBuyOrder(isin: string): Promise<any> {
+  async placeBuyOrder(isin: string, quantity: number): Promise<any> {
     return this.postLemonTrading('/orders', {
       side: TradeSide.BUY,
-      quantity: 1,
-      isin,
-      idempotency: `${isin}${TradeSide.BUY}`
+      expires_at: '2d',
+      quantity,
+      isin
+      // idempotency: `${isin}${TradeSide.BUY}`
+    })
+  }
+
+  async placeSellOrder(isin: string, quantity: number): Promise<any> {
+    return this.postLemonTrading('/orders', {
+      side: TradeSide.SELL,
+      expires_at: '2d',
+      quantity,
+      isin
+      // idempotency: `${isin}${TradeSide.SELL}`
     })
   }
 
@@ -114,8 +131,8 @@ export class LemonService {
     return this.postLemonTrading(`/orders/${orderId}/activate`)
   }
 
-  async getOrders(): Promise<any> {
-    return this.getLemonTrading('/orders')
+  async getOrders(params?: GetParams): Promise<any> {
+    return this.getLemonTrading('/orders', params)
   }
 
   async cancelOrder(orderId: string): Promise<any> {
