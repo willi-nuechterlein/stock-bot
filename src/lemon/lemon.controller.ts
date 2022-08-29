@@ -9,7 +9,12 @@ import {
   Query
 } from '@nestjs/common'
 import isin from 'src/utils/mapTickerToIsin'
-import { GetInstrumentBody, PostTradeBody } from './interfaces/lemon.interface'
+import {
+  GetInstrumentBody,
+  OrderStatus,
+  PostTradeBody,
+  TradeSide
+} from './interfaces/lemon.interface'
 import { LemonService } from './lemon.service'
 
 @Controller('lemon')
@@ -43,18 +48,47 @@ export class LemonController {
 
   @Post('/trade')
   async trade(@Body() body: PostTradeBody): Promise<any> {
-    const { ticker } = body
+    const { ticker, direction, quantity } = body
+    if (!ticker || !direction || !quantity) {
+      throw new BadRequestException()
+    }
+
     const isinString = isin[ticker]
-    const { results } = await this.lemonService.placeBuyOrder(isinString)
+
+    let results
+    if (direction === TradeSide.BUY) {
+      const order = await this.lemonService.placeBuyOrder(
+        isinString,
+        Number(quantity)
+      )
+      results = order.results
+    }
+    if (direction === TradeSide.SELL) {
+      // check if order exisists for isin
+      const orders = await this.lemonService.getOrders({
+        status: [OrderStatus.ACTIVATED, OrderStatus.INACTIVE].join(','),
+        side: TradeSide.BUY,
+        isin: isinString
+      })
+      // if order exisits cancel instead of selling
+      if (orders.results.length > 0) {
+        await this.lemonService.cancelOrder(orders.results[0].id)
+        return 'buy order canceled - due to sell trade'
+      }
+      const order = await this.lemonService.placeSellOrder(
+        isinString,
+        Number(quantity)
+      )
+      results = order.results
+    }
     if (results?.id) {
       const { status } = await this.lemonService.activateOrder(results.id)
       if (status === 'ok') {
-        return 'Order active'
+        return `${direction} order active`
       } else {
         throw new BadRequestException()
       }
     }
-    throw new BadRequestException()
   }
 
   @Delete('/orders/:id')
