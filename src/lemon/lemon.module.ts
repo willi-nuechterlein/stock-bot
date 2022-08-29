@@ -4,6 +4,7 @@ import { LemonService } from './lemon.service'
 
 @Module({
   controllers: [LemonController],
-  providers: [LemonService]
+  providers: [LemonService],
+  exports: [LemonService]
 })
 export class LemonModule {}

@@ -8,7 +8,7 @@ import {
   Post,
   Query
 } from '@nestjs/common'
-import isin from 'src/utils/mapTickerToIsin'
+import isin from '../utils/mapTickerToIsin'
 import {
   GetInstrumentBody,
   OrderStatus,

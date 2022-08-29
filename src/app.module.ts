@@ -9,11 +9,11 @@ import { RequestLoggingMiddleware } from './middleware/request-logging.middlewar
 
 @Module({
   imports: [
-    HttpModule,
-    LemonModule,
     ConfigModule.forRoot({
       isGlobal: true
-    })
+    }),
+    HttpModule,
+    LemonModule
   ],
   controllers: [AppController],
   providers: [AppService]
