@@ -37,7 +37,7 @@ export class LemonService {
       Logger.error(error)
       Logger.error(error.response.data)
       Logger.error(error.response.headers)
-      return error.message
+      return error.response.data
     }
   }
 
@@ -55,7 +55,7 @@ export class LemonService {
       Logger.error(error)
       Logger.error(error.response.data)
       Logger.error(error.response.headers)
-      return error.message
+      return error.response.data
     }
   }
 
@@ -75,7 +75,7 @@ export class LemonService {
       Logger.error(error)
       Logger.error(error.response.data)
       Logger.error(error.response.headers)
-      return error.message
+      return error.response.data
     }
   }
 
@@ -91,7 +91,7 @@ export class LemonService {
       return data
     } catch (error) {
       Logger.error(error)
-      return error.message
+      return error.response.data
     }
   }
 

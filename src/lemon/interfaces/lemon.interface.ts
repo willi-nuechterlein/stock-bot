@@ -11,6 +11,7 @@ export interface PostTradeBody {
   ticker: string
   direction: TradeSide
   quantity: number
+  auth: string
 }
 
 // lemon interfaces

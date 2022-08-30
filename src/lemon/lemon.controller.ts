@@ -6,8 +6,10 @@ import {
   Get,
   Param,
   Post,
-  Query
+  Query,
+  UnauthorizedException
 } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import isin from '../utils/mapTickerToIsin'
 import {
   GetInstrumentBody,
@@ -19,7 +21,10 @@ import { LemonService } from './lemon.service'
 
 @Controller('lemon')
 export class LemonController {
-  constructor(private readonly lemonService: LemonService) {}
+  constructor(
+    private readonly lemonService: LemonService,
+    private configService: ConfigService
+  ) {}
 
   @Get('/account')
   getAccount(): any {
@@ -48,11 +53,13 @@ export class LemonController {
 
   @Post('/trade')
   async trade(@Body() body: PostTradeBody): Promise<any> {
-    const { ticker, direction, quantity } = body
+    const { ticker, direction, quantity, auth } = body
     if (!ticker || !direction || !quantity) {
       throw new BadRequestException()
     }
-
+    if (auth !== this.configService.get<string>('BOT_PASSPHRASE')) {
+      throw new UnauthorizedException()
+    }
     const isinString = isin[ticker]
 
     let results
@@ -70,15 +77,26 @@ export class LemonController {
         side: TradeSide.BUY,
         isin: isinString
       })
+      if (orders.status === 'error') {
+        throw new BadRequestException()
+      }
       // if order exisits cancel instead of selling
       if (orders.results.length > 0) {
-        await this.lemonService.cancelOrder(orders.results[0].id)
+        const response = await this.lemonService.cancelOrder(
+          orders.results[0].id
+        )
+        if (response.status === 'error') {
+          throw new BadRequestException()
+        }
         return 'buy order canceled - due to sell trade'
       }
       const order = await this.lemonService.placeSellOrder(
         isinString,
         Number(quantity)
       )
+      if (order.status === 'error') {
+        throw new BadRequestException()
+      }
       results = order.results
     }
     if (results?.id) {
