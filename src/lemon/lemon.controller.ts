@@ -53,8 +53,13 @@ export class LemonController {
 
   @Post('/trade')
   async trade(@Body() body: PostTradeBody): Promise<any> {
-    const { ticker: tickerReq, direction: directionReq, quantity, auth } = body
-    if (!tickerReq || !directionReq || !quantity) {
+    const {
+      ticker: tickerReq,
+      direction: directionReq,
+      quantity: quantityReq,
+      auth
+    } = body
+    if (!tickerReq || !directionReq || !quantityReq) {
       throw new BadRequestException()
     }
     if (auth !== this.configService.get<string>('BOT_PASSPHRASE')) {
@@ -62,6 +67,7 @@ export class LemonController {
     }
     const ticker = tickerReq.trim()
     const direction = directionReq.trim()
+    const quantity = Math.abs(quantityReq)
     const isinString = isin[ticker]
 
     let results
