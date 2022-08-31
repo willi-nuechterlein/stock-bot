@@ -53,13 +53,15 @@ export class LemonController {
 
   @Post('/trade')
   async trade(@Body() body: PostTradeBody): Promise<any> {
-    const { ticker, direction, quantity, auth } = body
-    if (!ticker || !direction || !quantity) {
+    const { ticker: tickerReq, direction: directionReq, quantity, auth } = body
+    if (!tickerReq || !directionReq || !quantity) {
       throw new BadRequestException()
     }
     if (auth !== this.configService.get<string>('BOT_PASSPHRASE')) {
       throw new UnauthorizedException()
     }
+    const ticker = tickerReq.trim()
+    const direction = directionReq.trim()
     const isinString = isin[ticker]
 
     let results
@@ -80,7 +82,7 @@ export class LemonController {
       if (orders.status === 'error') {
         throw new BadRequestException()
       }
-      // if order exisits cancel instead of selling
+      // if order exists cancel instead of selling
       if (orders.results.length > 0) {
         const response = await this.lemonService.cancelOrder(
           orders.results[0].id
