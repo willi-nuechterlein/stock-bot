@@ -103,6 +103,18 @@ export class LemonService {
     return this.getLemonTrading('/positions')
   }
 
+  async getStatements(): Promise<any> {
+    return this.getLemonTrading('/positions/statements')
+  }
+
+  async getPerformance(): Promise<any> {
+    return this.getLemonTrading('/positions/performance')
+  }
+
+  async getBankstatements(): Promise<any> {
+    return this.getLemonTrading('/account/bankstatements')
+  }
+
   async getLemonInstrument(ticker: string): Promise<any> {
     return this.getLemonData('/instruments', { search: ticker, type: 'stock' })
   }

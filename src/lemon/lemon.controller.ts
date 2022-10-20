@@ -36,6 +36,21 @@ export class LemonController {
     return this.lemonService.getPositions()
   }
 
+  @Get('/performance')
+  getPerformance(): any {
+    return this.lemonService.getPerformance()
+  }
+
+  @Get('/statements')
+  getStatements(): any {
+    return this.lemonService.getStatements()
+  }
+
+  @Get('/bankstatements')
+  getBankStatements(): any {
+    return this.lemonService.getBankstatements()
+  }
+
   @Get('/orders')
   getOrders(): any {
     return this.lemonService.getOrders()
